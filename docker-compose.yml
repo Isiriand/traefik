@@ -1,0 +1,50 @@
+services:
+  app:
+    build: ./app
+    volumes:
+      - ./app:/usr/share/nginx/html
+    labels:
+      - "traefik.http.routers.app.rule=Host(`app.lan`)"
+    networks:
+      - internal
+      - web
+  blog:
+    build: ./blog
+    volumes:
+      - ./blog:/usr/share/nginx/html
+    labels:
+      - "traefik.http.routers.blog.rule=Host(`blog.lan`)"
+    networks:
+      - internal
+      - web
+  website:
+    build: ./website
+    volumes:
+      - ./website:/usr/share/nginx/html
+    labels:
+      - "traefik.http.routers.website.rule=Host(`website.lan`)"
+    networks:
+      - internal
+      - web
+
+  traefik:
+    image: traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./etc/traefik/conf.d/traefik.toml:/traefik.toml
+      - ./etc/traefik/conf.d/traefik_dynamic.toml:/traefik_dynamic.toml
+    command:
+      - "--api.insecure=true"
+      - "--log.level=DEBUG"
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
+  internal:
+    external: false
