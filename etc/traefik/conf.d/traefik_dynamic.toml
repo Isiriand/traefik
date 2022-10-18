@@ -1,0 +1,4 @@
+[http.routers.api]
+  rule = "Host(`monitor.lan`)"
+  entrypoints = ["web"]
+  service = "api@internal"
